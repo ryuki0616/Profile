@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ryuki Sato | IT for Smiles</title>
+    <meta name="description" content="ITで、笑顔をつくる。Ryuki Satoのポートフォリオサイトです。エンジニアとしてのプロジェクトやスキルを紹介しています。">
+    <meta name="keywords" content="Ryuki Sato, エンジニア, ポートフォリオ, IT, Flutter, Python">
+    <meta name="author" content="Ryuki Sato">
+
+    <!-- OGP Settings -->
+    <meta property="og:title" content="Ryuki Sato | IT for Smiles">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ryuki0616.github.io/profile/"> <!-- 仮のURL -->
+    <meta property="og:image" content="https://ryuki0616.github.io/profile/ogp.png"> <!-- 仮の画像パス -->
+    <meta property="og:description" content="ITで、笑顔をつくる。Ryuki Satoのポートフォリオサイトです。">
+    <meta property="og:site_name" content="Ryuki Sato Portfolio">
+    <meta property="og:locale" content="ja_JP">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@kyarameru_dev">
+    <meta name="twitter:creator" content="@kyarameru_dev">
+
+    <!-- Favicon (Using Emoji for now) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💻</text></svg>">
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Three.js for 3D effect -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="main.js" defer></script>
+</head>
+<body>
+    <!-- 背景アニメーション用キャンバス -->
+    <div id="canvas-container" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.4;"></div>
+
+    <!-- カーソルエフェクト -->
+    <div id="cursor" style="position: fixed; width: 20px; height: 20px; border: 1px solid var(--text-main); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s; mix-blend-mode: difference;"></div>
+    <div id="cursor-dot" style="position: fixed; width: 4px; height: 4px; background: var(--text-main); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); mix-blend-mode: difference;"></div>
+
+    <!-- コマンドプロンプト風オーバーレイ -->
+    <div id="terminal-overlay" class="terminal-overlay">
+        <div class="terminal-window">
+            <div class="terminal-header">
+                <div class="terminal-title">
+                    <span class="terminal-icon"></span>
+                    <span>Command Prompt - ryuki@profile</span>
+                </div>
+                <div class="terminal-controls">
+                    <div class="win-btn">_</div>
+                    <div class="win-btn">□</div>
+                    <div class="win-btn close" onclick="toggleTerminal()">×</div>
+                </div>
+            </div>
+            <div class="terminal-body">
+                <div class="terminal-intro">
+                    Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-91-generic x86_64)<br>
+                    <br>
+                    * Documentation:  https://help.ubuntu.com<br>
+                    * Management:     https://landscape.canonical.com<br>
+                    * Support:        https://ubuntu.com/advantage<br>
+                    <br>
+                    System information as of Thu Nov 28 2025<br>
+                    <br>
+                    ryuki@profile:~$ <br>
+                </div>
+                <div id="terminal-output" class="terminal-output"></div>
+                <div class="terminal-input-line">
+                    <span class="prompt" id="terminal-prompt-text" style="color: #51cf66;">ryuki@profile:~$</span>
+                    <input type="text" id="terminal-input" autocomplete="off" spellcheck="false">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <div class="container header-inner">
+            <div class="logo" data-hover>RS.</div>
+            <nav>
+                <ul>
+                    <li><a href="#about" data-hover>About</a></li>
+                    <li><a href="#works" data-hover>Works</a></li>
+                    <li><a href="#contact" data-hover>Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero container">
+            <div class="fade-in-up" style="animation-delay: 0.1s;">
+                <h1 class="hero-title" id="hero-title">ITで、笑顔をつくる。</h1>
+                <p class="hero-desc">
+                    年齢や性別を問わず、誰もが使いやすく、楽しめる技術を。<br>
+                    シンプルで直感的な体験をデザインします。
+                </p>
+                
+                <div class="hero-icons">
+                    <i class="fas fa-wifi" title="NFC/RFID" data-hover></i>
+                    <i class="fas fa-mobile-alt" title="Mobile" data-hover></i>
+                    <i class="fas fa-smile" title="Smile" data-hover></i>
+                </div>
+
+                <div class="nfc-badge" data-hover>
+                    <i class="fas fa-rss"></i> NFC / RFID Enthusiast
+                </div>
+                
+                <div style="margin-top: 2rem; font-size: 0.8rem; color: #666; opacity: 0.7;">
+                    <i class="fas fa-keyboard"></i> Press <span style="border: 1px solid #666; padding: 2px 5px; border-radius: 3px;">Ctrl + Alt + T</span> for Terminal
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="container">
+            <h2 class="section-title" data-scroll>About Me</h2>
+            <div class="about-content fade-in-up">
+                <div class="about-text" data-scroll>
+                    <h3>佐藤 琉輝 / Ryuki Sato</h3>
+                    <p>
+                        ITの力でもっと多くの人を笑顔にしたい。そんな思いで開発を続けています。
+                        特にNFC（近距離無線通信）やRFIDといった、実世界とデジタルをつなぐ技術に魅力を感じています。
+                    </p>
+                    <p>
+                        目指しているのは、説明書がいらないほど分かりやすく、触っていて楽しくなるようなUI。
+                        子供からお年寄りまで、すべての人がデジタルの恩恵を受けられる世界を作ることが私のミッションです。
+                    </p>
+                </div>
+                <div class="about-philosophy">
+                    <div class="philosophy-grid">
+                        <div class="philosophy-card" data-tilt>
+                            <div class="philosophy-icon"><i class="fas fa-universal-access"></i></div>
+                            <h3>Universal UI</h3>
+                            <p>年齢・性別関係なく使える直感的なデザイン</p>
+                        </div>
+                        <div class="philosophy-card" data-tilt>
+                            <div class="philosophy-icon"><i class="far fa-smile-beam"></i></div>
+                            <h3>Fun Experience</h3>
+                            <p>使うこと自体が楽しくなる体験の追求</p>
+                        </div>
+                        <div class="philosophy-card" data-tilt>
+                            <div class="philosophy-icon"><i class="fas fa-link"></i></div>
+                            <h3>Connect Real</h3>
+                            <p>NFC/RFIDでリアルとデジタルを繋ぐ</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="works" class="container">
+            <h2 class="section-title" data-scroll>Selected Works</h2>
+            <div class="work-list">
+                <!-- Project 1: Digital Live Adventure -->
+                <div class="work-item fade-in-up" data-scroll>
+                    <div class="work-image" data-hover>
+                        <img src="img/digilive.png" alt="Digital Live Adventure" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div class="work-info">
+                        <h3>Digital Live Adventure</h3>
+                        <p>
+                            デジタルと現実を融合させ、体を動かしながら遊べる体験型ゲーム。<br>
+                            全身を使ったアクションで、バーチャルな世界を冒険する新しいエンターテインメントです。
+                        </p>
+                        <div class="tech-tags">
+                            <span class="tech-tag">JavaScript</span>
+                            <span class="tech-tag">Node.js</span>
+                            <span class="tech-tag">HTML5/CSS3</span>
+                        </div>
+                        <a href="https://github.com/ryuki0616/digilive" target="_blank" rel="noopener noreferrer" data-hover>View GitHub <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- Project 2: Log Check AI -->
+                <div class="work-item reverse fade-in-up" data-scroll>
+                    <div class="work-image" data-hover>
+                        <img src="img/log_chek_AI.png" alt="Log Check AI" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div class="work-info">
+                        <h3>Log Check AI</h3>
+                        <p>
+                            システムログの自動チェックと異常検知を行うAIツール。<br>
+                            セキュリティと運用効率の向上を目指し、安心・安全なデジタル環境をサポートします。
+                        </p>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">AI</span>
+                            <span class="tech-tag">Security</span>
+                        </div>
+                        <a href="https://github.com/ryuki0616/log_checAI" target="_blank" rel="noopener noreferrer" data-hover>View GitHub <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <!-- Project 3: AI & Machine Learning -->
+                <div class="work-item fade-in-up" data-scroll>
+                    <div class="work-image" data-hover>
+                        <img src="img/DayBreak.png" alt="AI & Machine Learning" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div class="work-info">
+                        <h3>AI & Machine Learning</h3>
+                        <p>
+                            1日の始まりに必要な情報を一目で確認できるスマートダッシュボード。<br>
+                            ニュース、天気、気温、日付などを瞬時に集約し、快適な一日のスタートをサポートします。
+                        </p>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">Machine Learning</span>
+                            <span class="tech-tag">Research</span>
+                        </div>
+                        <a href="https://github.com/ryuki0616/ai_machine_learning" target="_blank" rel="noopener noreferrer" data-hover>View GitHub <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact fade-in-up" data-scroll>
+            <h2>Get in Touch</h2>
+            <p>
+                ITで笑顔を作るプロジェクト、一緒に始めませんか？
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap;">
+                <a href="mailto:ryu727tmm19@gmail.com" class="btn-contact" data-hover><i class="far fa-envelope"></i> Email</a>
+                <a href="https://x.com/kyarameru_dev" target="_blank" rel="noopener noreferrer" class="btn-contact" style="background: #fff; color: #000;" data-hover><i class="fab fa-x-twitter"></i> X (Twitter)</a>
+                <a href="https://github.com/ryuki0616" target="_blank" rel="noopener noreferrer" class="btn-contact" style="background: #333; color: #fff;" data-hover><i class="fab fa-github"></i> GitHub</a>
+            </div>
+            <p style="font-size: 0.9rem;">
+                University: <a href="mailto:f23ba035@chuo.ac.jp" data-hover>f23ba035@chuo.ac.jp</a>
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Ryuki Sato. Made with Smile <i class="fas fa-smile"></i></p>
+        </div>
+    </footer>
+</body>
+</html>
