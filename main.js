@@ -334,7 +334,38 @@ terminalInput.addEventListener('keydown', (e) => {
     }
 });
 
-// 出力用関数（HTML対応）
+// セキュリティ: 入力サニタイゼーション関数
+function sanitizeInput(input) {
+    if (typeof input !== 'string') return '';
+    // HTML特殊文字をエスケープ
+    return input
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#x27;')
+        .replace(/\//g, '&#x2F;');
+}
+
+// セキュリティ: コマンド検証関数
+function validateCommand(cmd) {
+    const allowedCommands = [
+        'help', 'about', 'social', 'smile', 'matrix', 
+        'fortune', 'omikuji', 'cls', 'stop', 'clearfx', 'exit', 'theme',
+        'sudo', 'neofetch', 'ls', 'll', 'cat', 'grep', 'cd', 'pwd', 'whoami', 'clear'
+    ];
+    return allowedCommands.includes(cmd.toLowerCase());
+}
+
+// セキュリティ: パス検証関数（ディレクトリトラバーサル対策）
+function sanitizePath(path) {
+    // 危険な文字列を除去
+    if (!path || typeof path !== 'string') return '';
+    // パストラバーサル攻撃を防ぐ
+    return path.replace(/\.\./g, '').replace(/[<>:"|?*\x00-\x1f]/g, '');
+}
+
+// 出力用関数（セキュリティ強化版）
 function addOutput(text, type = 'normal') {
     const div = document.createElement('div');
     
@@ -350,28 +381,29 @@ function addOutput(text, type = 'normal') {
             promptSpan.style.color = '#51cf66'; // 緑色
             
             const cmdSpan = document.createElement('span');
-            cmdSpan.textContent = text;
+            // ユーザー入力をサニタイズ
+            cmdSpan.textContent = sanitizeInput(text);
             cmdSpan.style.color = '#ccc'; // コマンド本体は白/グレー
             
             div.appendChild(promptSpan);
             div.appendChild(cmdSpan);
             break;
         case 'error':
-            div.textContent = text;
+            div.textContent = sanitizeInput(text);
             div.style.color = '#ff6b6b';
             break;
         case 'success':
-            div.textContent = text;
+            div.textContent = sanitizeInput(text);
             div.style.color = '#51cf66';
             break;
-        case 'html':
-            // HTML出力が必要な neofetch などのための例外
-            // ユーザー入力を直接ここに出力しないように注意が必要
-            div.innerHTML = text;
+        case 'neofetch':
+            // neofetch専用の安全なDOM構築
+            // innerHTMLを使わず、DOM APIで直接構築
+            buildNeofetchOutput(div);
             break;
         default:
             // 通常出力はtextContentでエスケープする
-            div.textContent = text;
+            div.textContent = sanitizeInput(text);
             div.style.whiteSpace = 'pre-wrap'; // 改行を維持
     }
     
@@ -385,12 +417,124 @@ function addOutput(text, type = 'normal') {
     });
 }
 
+// neofetch出力を安全に構築する関数（DOM API使用）
+function buildNeofetchOutput(container) {
+    const uptimeMillis = Date.now() - startTime;
+    const uptimeSec = Math.floor(uptimeMillis / 1000);
+    const hours = Math.floor(uptimeSec / 3600);
+    const minutes = Math.floor((uptimeSec % 3600) / 60);
+    const seconds = uptimeSec % 60;
+    const uptimeStr = `${hours}h ${minutes}m ${seconds}s`;
+    
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    
+    const logoColor = '#3b8eea';
+    const titleColor = '#51cf66';
+    
+    // メインコンテナ
+    const mainDiv = document.createElement('div');
+    mainDiv.style.display = 'flex';
+    mainDiv.style.gap = '20px';
+    mainDiv.style.fontFamily = "'Courier New', monospace";
+    
+    // ロゴ部分
+    const logoDiv = document.createElement('div');
+    logoDiv.style.color = logoColor;
+    logoDiv.style.fontWeight = 'bold';
+    logoDiv.style.lineHeight = '1.2';
+    logoDiv.style.whiteSpace = 'pre';
+    logoDiv.textContent = `       RRRRRR
+      RR   RR
+     RR   RR
+    RRRRRR
+   RR  RR
+  RR    RR
+ RR      RR`;
+    
+    // 情報部分
+    const infoDiv = document.createElement('div');
+    infoDiv.style.lineHeight = '1.2';
+    
+    // タイトル
+    const titleSpan = document.createElement('span');
+    titleSpan.style.color = titleColor;
+    titleSpan.style.fontWeight = 'bold';
+    titleSpan.textContent = 'ryuki@profile';
+    infoDiv.appendChild(titleSpan);
+    infoDiv.appendChild(document.createElement('br'));
+    
+    // 区切り線
+    infoDiv.appendChild(document.createTextNode('------------------'));
+    infoDiv.appendChild(document.createElement('br'));
+    
+    // システム情報（安全に構築）
+    const createInfoLine = (label, value) => {
+        const line = document.createElement('div');
+        const labelSpan = document.createElement('span');
+        labelSpan.style.color = logoColor;
+        labelSpan.style.fontWeight = 'bold';
+        labelSpan.textContent = `${label}: `;
+        line.appendChild(labelSpan);
+        line.appendChild(document.createTextNode(value));
+        return line;
+    };
+    
+    const hostName = navigator.userAgent.indexOf("Chrome") > -1 ? "Chrome" : "Web Browser";
+    const themeName = document.body.classList.contains('light-theme') ? 'Light' : 'Dark';
+    
+    infoDiv.appendChild(createInfoLine('OS', 'Ryuki OS v1.0 (Web)'));
+    infoDiv.appendChild(createInfoLine('Host', hostName));
+    infoDiv.appendChild(createInfoLine('Uptime', uptimeStr));
+    infoDiv.appendChild(createInfoLine('Resolution', `${width}x${height}`));
+    infoDiv.appendChild(createInfoLine('Shell', 'JS-Shell'));
+    infoDiv.appendChild(createInfoLine('Theme', themeName));
+    infoDiv.appendChild(createInfoLine('CPU', '100% Passion'));
+    infoDiv.appendChild(document.createElement('br'));
+    
+    // カラーパレット
+    const paletteDiv = document.createElement('div');
+    paletteDiv.style.display = 'flex';
+    paletteDiv.style.gap = '5px';
+    const colors = ['#000', '#f00', '#0f0', '#ff0', '#00f', '#f0f', '#0ff', '#fff'];
+    colors.forEach(color => {
+        const colorSpan = document.createElement('span');
+        colorSpan.style.background = color;
+        colorSpan.style.width = '15px';
+        colorSpan.style.height = '15px';
+        paletteDiv.appendChild(colorSpan);
+    });
+    infoDiv.appendChild(paletteDiv);
+    
+    mainDiv.appendChild(logoDiv);
+    mainDiv.appendChild(infoDiv);
+    container.appendChild(mainDiv);
+}
+
 let secretAccessCount = 0;
 
 function processCommand(rawCmd) {
+    // セキュリティ: 入力検証
+    if (!rawCmd || typeof rawCmd !== 'string') {
+        addOutput('Invalid input', 'error');
+        return;
+    }
+    
+    // セキュリティ: 入力長制限（DoS対策）
+    if (rawCmd.length > 1000) {
+        addOutput('Command too long', 'error');
+        return;
+    }
+    
     const cmdLower = rawCmd.toLowerCase().trim();
     const args = rawCmd.trim().split(/\s+/); // 空白区切りで引数を取得
     const command = args[0].toLowerCase();
+    
+    // セキュリティ: コマンド検証
+    if (command && !validateCommand(command)) {
+        addOutput(`'${sanitizeInput(command)}' is not recognized as an internal or external command, operable program or batch file.`, 'error');
+        return;
+    }
 
     addOutput(rawCmd, 'command');
     
@@ -447,7 +591,12 @@ function processCommand(rawCmd) {
             addOutput("usage: cat [filename]");
             return;
         }
-        const fileName = args[1];
+        // セキュリティ: ファイル名をサニタイズ
+        const fileName = sanitizePath(args[1]);
+        if (!fileName) {
+            addOutput("cat: Invalid filename", 'error');
+            return;
+        }
         // パス解決（簡易版）
         let targetPath = currentDir === '/' ? `/${fileName}` : `${currentDir}/${fileName}`;
         
@@ -456,9 +605,9 @@ function processCommand(rawCmd) {
         } else {
             // ディレクトリかどうかチェック
             if (fileSystem[targetPath]) {
-                addOutput(`cat: ${fileName}: Is a directory`, 'error');
+                addOutput(`cat: ${sanitizeInput(fileName)}: Is a directory`, 'error');
             } else {
-                addOutput(`cat: ${fileName}: No such file or directory`, 'error');
+                addOutput(`cat: ${sanitizeInput(fileName)}: No such file or directory`, 'error');
             }
         }
         return;
@@ -470,20 +619,26 @@ function processCommand(rawCmd) {
             addOutput("usage: grep [pattern] [filename]");
             return;
         }
-        const pattern = args[1];
-        const fileName = args[2];
+        // セキュリティ: パターンとファイル名をサニタイズ
+        const pattern = sanitizeInput(args[1]);
+        const fileName = sanitizePath(args[2]);
+        if (!fileName) {
+            addOutput("grep: Invalid filename", 'error');
+            return;
+        }
         let targetPath = currentDir === '/' ? `/${fileName}` : `${currentDir}/${fileName}`;
 
         if (fileContents[targetPath]) {
             const content = fileContents[targetPath];
             const lines = content.split('\n');
+            // セキュリティ: パターンマッチングは安全（既存のファイル内容のみ）
             const matches = lines.filter(line => line.includes(pattern));
             if (matches.length > 0) {
                 matches.forEach(m => addOutput(m));
             } 
             // マッチしなければ何も表示しないのがgrep流
         } else {
-             addOutput(`grep: ${fileName}: No such file or directory`, 'error');
+             addOutput(`grep: ${sanitizeInput(fileName)}: No such file or directory`, 'error');
         }
         return;
     }
@@ -492,6 +647,12 @@ function processCommand(rawCmd) {
     if (command === 'cd') {
         let target = args[1];
         if (!target) target = '/home/ryuki'; // default to home
+        
+        // セキュリティ: パストラバーサル対策
+        // 許可されたパスのみ許可
+        const allowedPaths = ['/', '/home', '/home/ryuki', '/etc', '..', '~'];
+        const isAllowedPath = allowedPaths.includes(target) || 
+                             (target.startsWith('/home/ryuki') && fileSystem[target]);
         
         // パス解決ロジック
         let newPath = currentDir;
@@ -507,11 +668,17 @@ function processCommand(rawCmd) {
         } else if (target === '~') {
             newPath = '/home/ryuki';
         } else {
+            // セキュリティ: パスをサニタイズ
+            const sanitizedTarget = sanitizePath(target);
+            if (!sanitizedTarget && target !== '/') {
+                addOutput(`cd: ${sanitizeInput(target)}: Invalid path`, 'error');
+                return;
+            }
             // 相対パス or 絶対パス
             if (target.startsWith('/')) {
-                newPath = target;
+                newPath = sanitizedTarget || target;
             } else {
-                newPath = currentDir === '/' ? `/${target}` : `${currentDir}/${target}`;
+                newPath = currentDir === '/' ? `/${sanitizedTarget}` : `${currentDir}/${sanitizedTarget}`;
             }
         }
         
@@ -520,7 +687,7 @@ function processCommand(rawCmd) {
             currentDir = newPath;
             updatePrompt(); // プロンプト更新
         } else {
-            addOutput(`cd: ${target}: No such file or directory`, 'error');
+            addOutput(`cd: ${sanitizeInput(target)}: No such file or directory`, 'error');
         }
         return;
     }
@@ -539,54 +706,16 @@ function processCommand(rawCmd) {
 
     // neofetch implementation
     if (command === 'neofetch') {
-        const uptimeMillis = Date.now() - startTime;
-        const uptimeSec = Math.floor(uptimeMillis / 1000);
-        const hours = Math.floor(uptimeSec / 3600);
-        const minutes = Math.floor((uptimeSec % 3600) / 60);
-        const seconds = uptimeSec % 60;
-        const uptimeStr = `${hours}h ${minutes}m ${seconds}s`;
+        // セキュリティ: DOM APIを使用して安全に構築
+        const div = document.createElement('div');
+        buildNeofetchOutput(div);
+        terminalOutput.appendChild(div);
         
-        const width = window.innerWidth;
-        const height = window.innerHeight;
-        
-        const logoColor = '#3b8eea'; // Blue-ish
-        const titleColor = '#51cf66'; // Green-ish
-        
-        const art = `
-<div style="display: flex; gap: 20px; font-family: 'Courier New', monospace;">
-    <div style="color: ${logoColor}; font-weight: bold; line-height: 1.2; white-space: pre;">
-       RRRRRR
-      RR   RR
-     RR   RR
-    RRRRRR
-   RR  RR
-  RR    RR
- RR      RR
-    </div>
-    <div style="line-height: 1.2;">
-        <span style="color: ${titleColor}; font-weight: bold;">ryuki@profile</span><br>
-        ------------------<br>
-        <span style="color: ${logoColor}; font-weight: bold;">OS</span>: Ryuki OS v1.0 (Web)<br>
-        <span style="color: ${logoColor}; font-weight: bold;">Host</span>: ${navigator.userAgent.indexOf("Chrome") > -1 ? "Chrome" : "Web Browser"}<br>
-        <span style="color: ${logoColor}; font-weight: bold;">Uptime</span>: ${uptimeStr}<br>
-        <span style="color: ${logoColor}; font-weight: bold;">Resolution</span>: ${width}x${height}<br>
-        <span style="color: ${logoColor}; font-weight: bold;">Shell</span>: JS-Shell<br>
-        <span style="color: ${logoColor}; font-weight: bold;">Theme</span>: ${document.body.classList.contains('light-theme') ? 'Light' : 'Dark'}<br>
-        <span style="color: ${logoColor}; font-weight: bold;">CPU</span>: 100% Passion<br>
-        <br>
-        <div style="display: flex; gap: 5px;">
-           <span style="background:#000; width:15px; height:15px;"></span>
-           <span style="background:#f00; width:15px; height:15px;"></span>
-           <span style="background:#0f0; width:15px; height:15px;"></span>
-           <span style="background:#ff0; width:15px; height:15px;"></span>
-           <span style="background:#00f; width:15px; height:15px;"></span>
-           <span style="background:#f0f; width:15px; height:15px;"></span>
-           <span style="background:#0ff; width:15px; height:15px;"></span>
-           <span style="background:#fff; width:15px; height:15px;"></span>
-        </div>
-    </div>
-</div>`;
-        addOutput(art, 'html');
+        // スクロール制御
+        const terminalBody = document.querySelector('.terminal-body');
+        requestAnimationFrame(() => {
+            terminalBody.scrollTop = terminalBody.scrollHeight;
+        });
         return;
     }
 
@@ -628,7 +757,10 @@ function processCommand(rawCmd) {
             break;
         case 'cls':
         case 'clear':
-            terminalOutput.innerHTML = '';
+            // セキュリティ: innerHTMLの代わりにremoveChildを使用
+            while (terminalOutput.firstChild) {
+                terminalOutput.removeChild(terminalOutput.firstChild);
+            }
             // イントロメッセージも消すために非表示にするか、削除する
             const intro = document.querySelector('.terminal-intro');
             if (intro) {
@@ -655,7 +787,8 @@ function processCommand(rawCmd) {
         case '':
             break;
         default:
-            addOutput(`'${command}' is not recognized as an internal or external command, operable program or batch file.`, 'error');
+            // このケースは既にprocessCommandの最初で検証されているため、通常は到達しない
+            addOutput(`'${sanitizeInput(command)}' is not recognized as an internal or external command, operable program or batch file.`, 'error');
     }
 }
 
