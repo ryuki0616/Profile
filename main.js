@@ -810,8 +810,7 @@ function processCommand(rawCmd) {
             triggerSmileEffect();
             break;
         case 'matrix':
-            addOutput("Entering the Matrix...", 'success');
-            addOutput("(Will auto-stop after 10 seconds. Use 'stop' or 'clearfx' to stop manually)", 'success');
+            addOutput("Entering the Matrix... (Auto-stops after 10s. Use 'stop' or 'clearfx' to stop manually)", 'success');
             toggleMatrixEffect();
             break;
         case 'fortune':
