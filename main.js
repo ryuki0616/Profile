@@ -811,6 +811,7 @@ function processCommand(rawCmd) {
             break;
         case 'matrix':
             addOutput("Entering the Matrix...", 'success');
+            addOutput("(Will auto-stop after 10 seconds. Use 'stop' or 'clearfx' to stop manually)", 'success');
             toggleMatrixEffect();
             break;
         case 'fortune':
