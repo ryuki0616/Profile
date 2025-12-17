@@ -40,71 +40,133 @@ scrollElements.forEach(el => {
 });
 
 // 3. Three.js 背景パーティクル
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ alpha: true });
+// Three.jsが読み込まれるのを待つ
+function initThreeJS() {
+    // Three.jsが利用可能か確認
+    if (typeof THREE === 'undefined') {
+        console.error('Three.js is not loaded');
+        return;
+    }
 
-// ピクセル比を考慮してレンダリング負荷を下げる（最大2倍まで）
-const pixelRatio = Math.min(window.devicePixelRatio, 2);
-renderer.setPixelRatio(pixelRatio);
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.getElementById('canvas-container').appendChild(renderer.domElement);
+    const canvasContainer = document.getElementById('canvas-container');
+    if (!canvasContainer) {
+        console.error('canvas-container element not found');
+        return;
+    }
 
-// パーティクル作成
-const geometry = new THREE.BufferGeometry();
-// 画面幅に応じてパーティクル数を調整（スマホ: 100, PC: 200）
-const count = window.innerWidth < 768 ? 100 : 200;
-const positions = new Float32Array(count * 3);
+    try {
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
 
-for(let i = 0; i < count * 3; i++) {
-    positions[i] = (Math.random() - 0.5) * 20; // 広範囲に配置
+        // ピクセル比を考慮してレンダリング負荷を下げる（最大2倍まで）
+        const pixelRatio = Math.min(window.devicePixelRatio, 2);
+        renderer.setPixelRatio(pixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        canvasContainer.appendChild(renderer.domElement);
+
+        // パーティクル作成
+        const geometry = new THREE.BufferGeometry();
+        // 画面幅に応じてパーティクル数を調整（スマホ: 100, PC: 200）
+        const count = window.innerWidth < 768 ? 100 : 200;
+        const positions = new Float32Array(count * 3);
+
+        for(let i = 0; i < count * 3; i++) {
+            positions[i] = (Math.random() - 0.5) * 20; // 広範囲に配置
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const material = new THREE.PointsMaterial({
+            size: 0.05,
+            color: 0xffffff, // 白い点
+            transparent: true,
+            opacity: 0.8
+        });
+
+        const particles = new THREE.Points(geometry, material);
+        scene.add(particles);
+
+        camera.position.z = 5;
+
+        // アニメーションループ
+        let mouseX = 0;
+        let mouseY = 0;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = event.clientX / window.innerWidth - 0.5;
+            mouseY = event.clientY / window.innerHeight - 0.5;
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // パーティクルをゆっくり回転
+            particles.rotation.y += 0.002;
+            particles.rotation.x += 0.002;
+            
+            // マウス追従（少し遅れて動く）
+            particles.rotation.x += (mouseY * 0.5 - particles.rotation.x) * 0.05;
+            particles.rotation.y += (mouseX * 0.5 - particles.rotation.y) * 0.05;
+            
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // リサイズ対応
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    } catch (error) {
+        console.error('Error initializing Three.js:', error);
+    }
 }
 
-geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-
-
-const material = new THREE.PointsMaterial({
-    size: 0.05,
-    color: 0xffffff, // 白い点
-    transparent: true,
-    opacity: 0.8
-});
-
-const particles = new THREE.Points(geometry, material);
-scene.add(particles);
-
-camera.position.z = 5;
-
-// アニメーションループ
-let mouseX = 0;
-let mouseY = 0;
-
-document.addEventListener('mousemove', (event) => {
-    mouseX = event.clientX / window.innerWidth - 0.5;
-    mouseY = event.clientY / window.innerHeight - 0.5;
-});
-
-function animate() {
-    requestAnimationFrame(animate);
-    
-    // パーティクルをゆっくり回転
-    particles.rotation.y += 0.002;
-    particles.rotation.x += 0.002;
-    
-    // マウス追従（少し遅れて動く）
-    particles.rotation.x += (mouseY * 0.5 - particles.rotation.x) * 0.05;
-    particles.rotation.y += (mouseX * 0.5 - particles.rotation.y) * 0.05;
-    
-    renderer.render(scene, camera);
+// DOMContentLoaded後にThree.jsの初期化を実行
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        // Three.jsが読み込まれるまで少し待つ
+        if (typeof THREE !== 'undefined') {
+            initThreeJS();
+        } else {
+            // Three.jsの読み込みを待つ
+            const checkThreeJS = setInterval(() => {
+                if (typeof THREE !== 'undefined') {
+                    clearInterval(checkThreeJS);
+                    initThreeJS();
+                }
+            }, 100);
+            // 10秒後にタイムアウト
+            setTimeout(() => {
+                clearInterval(checkThreeJS);
+                if (typeof THREE === 'undefined') {
+                    console.error('Three.js failed to load');
+                }
+            }, 10000);
+        }
+    });
+} else {
+    // 既にDOMContentLoadedが発火している場合
+    if (typeof THREE !== 'undefined') {
+        initThreeJS();
+    } else {
+        // Three.jsの読み込みを待つ
+        const checkThreeJS = setInterval(() => {
+            if (typeof THREE !== 'undefined') {
+                clearInterval(checkThreeJS);
+                initThreeJS();
+            }
+        }, 100);
+        setTimeout(() => {
+            clearInterval(checkThreeJS);
+            if (typeof THREE === 'undefined') {
+                console.error('Three.js failed to load');
+            }
+        }, 10000);
+    }
 }
-animate();
-
-// リサイズ対応
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-});
 
 // 4. 3D Tilt Effect (Philosophy Cards)
 const cards = document.querySelectorAll('[data-tilt]');
