@@ -24,20 +24,37 @@ hoverElements.forEach(el => {
     });
 });
 
-// 2. スクロールアニメーション (Intersection Observer)
-const scrollElements = document.querySelectorAll('[data-scroll]');
+// 2. スクロールアニメーション (Intersection Observer) - 強化版
+const scrollElements = document.querySelectorAll('[data-scroll], .fade-in-up');
+
+// アニメーションを無効化する設定に対応
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
-            entry.target.classList.add('in-view');
+            // 一度表示された要素は再度アニメーションしないように制御
+            if (!entry.target.classList.contains('in-view')) {
+                entry.target.classList.add('in-view');
+            }
         }
     });
-}, { threshold: 0.15 }); // 少ししきい値を上げる
-
-scrollElements.forEach(el => {
-    observer.observe(el);
+}, { 
+    threshold: 0.1, // 要素の10%が表示されたらアニメーション開始
+    rootMargin: '0px 0px -50px 0px' // 少し早めにアニメーションを開始
 });
+
+// アニメーションが無効化されていない場合のみ適用
+if (!prefersReducedMotion) {
+    scrollElements.forEach(el => {
+        observer.observe(el);
+    });
+} else {
+    // アニメーション無効時は即座に表示
+    scrollElements.forEach(el => {
+        el.classList.add('in-view');
+    });
+}
 
 // 3. Three.js 背景パーティクル
 // Three.jsが読み込まれるのを待つ

@@ -354,8 +354,8 @@ footer {
 
 /* 汎用アニメーションクラス (Aboutセクションなどで使用) */
 .fade-in-up {
-    /* opacity: 0; */ /* 削除 */
-    /* transform: translateY(30px); */ /* 削除 */
+    opacity: 0;
+    transform: translateY(30px);
     transition: all 0.8s ease-out;
 }
 
@@ -365,13 +365,24 @@ footer {
 }
 
 [data-scroll] {
-    /* opacity: 0; */ /* 削除 */
-    /* transform: translateY(30px); */ /* 削除 */
+    opacity: 0;
+    transform: translateY(30px);
     transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
+
 [data-scroll].in-view {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* アクセシビリティ: アニメーションを無効化する設定に対応 */
+@media (prefers-reduced-motion: reduce) {
+    .fade-in-up,
+    [data-scroll] {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
 }
 
 /* 笑顔エフェクト用アニメーション */
