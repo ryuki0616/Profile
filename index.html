@@ -8,14 +8,24 @@
     <meta name="keywords" content="Ryuki Sato, エンジニア, ポートフォリオ, IT, Flutter, Python">
     <meta name="author" content="Ryuki Sato">
 
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-T086H1JGHX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-T086H1JGHX');
+    </script>
+
     <!-- Content Security Policy (CSP) -->
     <meta http-equiv="Content-Security-Policy" 
           content="default-src 'self'; 
-                   script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; 
+                   script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://www.googletagmanager.com; 
                    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; 
                    font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; 
                    img-src 'self' data: https:;
-                   connect-src 'self';
+                   connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com;
                    worker-src 'self' blob:;">
 
     <!-- OGP Settings -->
