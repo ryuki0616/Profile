@@ -919,6 +919,9 @@ function stopSmileEffect() {
 
 // 2. Matrix Effect
 let matrixInterval;
+let matrixTimeout; // 自動停止用のタイムアウト
+const MATRIX_DURATION = 10000; // 10秒後に自動停止（ミリ秒）
+
 function toggleMatrixEffect() {
     const id = 'matrix-canvas';
     let canvas = document.getElementById(id);
@@ -928,6 +931,11 @@ function toggleMatrixEffect() {
         stopMatrixEffect();
         addOutput("Matrix effect disabled.");
         return;
+    }
+
+    // 既存のタイムアウトをクリア（念のため）
+    if (matrixTimeout) {
+        clearTimeout(matrixTimeout);
     }
 
     canvas = document.createElement('canvas');
@@ -976,6 +984,12 @@ function toggleMatrixEffect() {
 
     matrixInterval = setInterval(draw, 33);
     
+    // 自動停止タイマー（10秒後）
+    matrixTimeout = setTimeout(() => {
+        stopMatrixEffect();
+        addOutput("Matrix effect automatically stopped after 10 seconds.", 'success');
+    }, MATRIX_DURATION);
+    
     // リサイズ対応
     window.addEventListener('resize', () => {
         if(document.getElementById(id)) {
@@ -987,6 +1001,10 @@ function toggleMatrixEffect() {
 
 function stopMatrixEffect() {
     clearInterval(matrixInterval);
+    if (matrixTimeout) {
+        clearTimeout(matrixTimeout);
+        matrixTimeout = null;
+    }
     const canvas = document.getElementById('matrix-canvas');
     if (canvas) {
         canvas.remove();
