@@ -987,7 +987,15 @@ function toggleMatrixEffect() {
     
     // 自動停止タイマー（10秒後）
     matrixTimeout = setTimeout(() => {
-        stopMatrixEffect();
+        if (matrixInterval) {
+            clearInterval(matrixInterval);
+            matrixInterval = null;
+        }
+        const canvasToRemove = document.getElementById(id);
+        if (canvasToRemove) {
+            canvasToRemove.remove();
+        }
+        matrixTimeout = null;
         addOutput("Matrix effect automatically stopped after 10 seconds.", 'success');
     }, MATRIX_DURATION);
     
