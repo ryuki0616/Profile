@@ -45,6 +45,38 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
+.canvas-container {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.4;
+}
+
+.cursor-ring {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--text-main);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: width 0.2s, height 0.2s;
+    mix-blend-mode: difference;
+}
+
+.cursor-dot {
+    position: fixed;
+    width: 4px;
+    height: 4px;
+    background: var(--text-main);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    mix-blend-mode: difference;
+}
+
 a {
     color: var(--text-main);
     text-decoration: none;
@@ -169,6 +201,23 @@ main {
     margin-top: 1rem;
 }
 
+.delay-100 {
+    animation-delay: 0.1s;
+}
+
+.terminal-shortcut-hint {
+    margin-top: 2rem;
+    font-size: 0.8rem;
+    color: #666666;
+    opacity: 0.7;
+}
+
+.shortcut-key {
+    border: 1px solid #666666;
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
 /* セクション共通 */
 section {
     padding: 6rem 0;
@@ -279,6 +328,12 @@ section {
     transform: scale(1.02);
 }
 
+.work-image-media {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .work-info h3 {
     font-size: 1.8rem;
     margin-bottom: 1rem;
@@ -341,6 +396,28 @@ section {
 .btn-contact:hover {
     transform: scale(1.05);
     opacity: 1;
+}
+
+.btn-contact-light {
+    background: #ffffff;
+    color: #000000;
+}
+
+.btn-contact-dark {
+    background: #333333;
+    color: #ffffff;
+}
+
+.contact-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.contact-meta {
+    font-size: 0.9rem;
 }
 
 /* Footer */
@@ -457,6 +534,10 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font-family: inherit;
     font-size: 10px; /* アイコンサイズ */
     color: #000;
     transition: background 0.2s, color 0.2s;
@@ -521,6 +602,10 @@ footer {
     margin-right: 0;
 }
 
+.prompt-active {
+    color: #51cf66;
+}
+
 #terminal-input {
     background: transparent;
     border: none;
@@ -529,4 +614,14 @@ footer {
     font-size: inherit;
     flex: 1;
     outline: none;
+}
+
+.footer-meta {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.footer-link {
+    text-decoration: underline;
+    opacity: 0.7;
 }

@@ -10,23 +10,19 @@
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-T086H1JGHX"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-T086H1JGHX');
-    </script>
+    <script src="analytics.js" defer></script>
 
     <!-- Content Security Policy (CSP) -->
     <meta http-equiv="Content-Security-Policy" 
           content="default-src 'self'; 
-                   script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://www.googletagmanager.com; 
+                   script-src 'self' https://www.googletagmanager.com; 
                    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; 
                    font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:; 
                    img-src 'self' data: https:;
                    connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com;
-                   worker-src 'self' blob:;">
+                   worker-src 'self' blob:;
+                   object-src 'none';
+                   base-uri 'self';">
 
     <!-- OGP Settings -->
     <meta property="og:title" content="Ryuki Sato | IT for Smiles">
@@ -60,26 +56,21 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Font Awesome with SRI (Subresource Integrity) -->
-    <!-- SRIハッシュ値は https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css のページから取得してください -->
     <link rel="stylesheet" 
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
           crossorigin="anonymous"
           referrerpolicy="no-referrer">
-    <!-- Three.js for 3D effect -->
-    <!-- SRIハッシュ値は https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js のページから取得してください -->
-    <!-- 動作確認のため一時的にSRIを無効化しています。本番環境では必ず正しいintegrityハッシュを設定してください -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"></script>
+    <script src="vendor/three.r128.min.js" defer></script>
     <script src="main.js" defer></script>
 </head>
 <body>
     <!-- 背景アニメーション用キャンバス -->
-    <div id="canvas-container" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.4;"></div>
+    <div id="canvas-container" class="canvas-container"></div>
 
     <!-- カーソルエフェクト -->
-    <div id="cursor" style="position: fixed; width: 20px; height: 20px; border: 1px solid var(--text-main); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s; mix-blend-mode: difference;"></div>
-    <div id="cursor-dot" style="position: fixed; width: 4px; height: 4px; background: var(--text-main); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); mix-blend-mode: difference;"></div>
+    <div id="cursor" class="cursor-ring"></div>
+    <div id="cursor-dot" class="cursor-dot"></div>
 
     <!-- コマンドプロンプト風オーバーレイ -->
     <div id="terminal-overlay" class="terminal-overlay">
@@ -92,7 +83,7 @@
                 <div class="terminal-controls">
                     <div class="win-btn">_</div>
                     <div class="win-btn">□</div>
-                    <div class="win-btn close" onclick="toggleTerminal()">×</div>
+                    <button type="button" class="win-btn close" id="terminal-close" aria-label="Close terminal">×</button>
                 </div>
             </div>
             <div class="terminal-body">
@@ -103,13 +94,13 @@
                     * Management:     https://landscape.canonical.com<br>
                     * Support:        https://ubuntu.com/advantage<br>
                     <br>
-                    System information as of Thu Nov 28 2025<br>
+                    System information available via neofetch<br>
                     <br>
                     ryuki@profile:~$ <br>
                 </div>
                 <div id="terminal-output" class="terminal-output"></div>
                 <div class="terminal-input-line">
-                    <span class="prompt" id="terminal-prompt-text" style="color: #51cf66;">ryuki@profile:~$</span>
+                    <span class="prompt prompt-active" id="terminal-prompt-text">ryuki@profile:~$</span>
                     <input type="text" id="terminal-input" autocomplete="off" spellcheck="false">
                 </div>
             </div>
@@ -131,7 +122,7 @@
 
     <main>
         <section class="hero container">
-            <div class="fade-in-up" style="animation-delay: 0.1s;">
+            <div class="fade-in-up delay-100">
                 <h1 class="hero-title" id="hero-title">ITで、笑顔をつくる。</h1>
                 <p class="hero-desc">
                     年齢や性別を問わず、誰もが使いやすく、楽しめる技術を。<br>
@@ -148,8 +139,8 @@
                     <i class="fas fa-rss"></i> NFC / RFID Enthusiast
                 </div>
                 
-                <div style="margin-top: 2rem; font-size: 0.8rem; color: #666; opacity: 0.7;">
-                    <i class="fas fa-keyboard"></i> Press <span style="border: 1px solid #666; padding: 2px 5px; border-radius: 3px;">Ctrl + Alt + T</span> for Terminal
+                <div class="terminal-shortcut-hint">
+                    <i class="fas fa-keyboard"></i> Press <span class="shortcut-key">Ctrl + Alt + T</span> for Terminal
                 </div>
             </div>
         </section>
@@ -196,7 +187,7 @@
                 <!-- Project 1: Digital Live Adventure -->
                 <div class="work-item fade-in-up" data-scroll>
                     <div class="work-image" data-hover>
-                        <img src="img/digilive.png" alt="Digital Live Adventure" style="width: 100%; height: 100%; object-fit: cover;">
+                        <img src="img/digilive.png" alt="Digital Live Adventure" class="work-image-media" loading="lazy">
                     </div>
                     <div class="work-info">
                         <h3>Digital Live Adventure</h3>
@@ -216,7 +207,7 @@
                 <!-- Project 2: Log Check AI -->
                 <div class="work-item reverse fade-in-up" data-scroll>
                     <div class="work-image" data-hover>
-                        <img src="img/log_chek_AI.png" alt="Log Check AI" style="width: 100%; height: 100%; object-fit: cover;">
+                        <img src="img/log_chek_AI.png" alt="Log Check AI" class="work-image-media" loading="lazy">
                     </div>
                     <div class="work-info">
                         <h3>Log Check AI</h3>
@@ -236,7 +227,7 @@
                 <!-- Project 3: AI & Machine Learning -->
                 <div class="work-item fade-in-up" data-scroll>
                     <div class="work-image" data-hover>
-                        <img src="img/DayBreak.png" alt="AI & Machine Learning" style="width: 100%; height: 100%; object-fit: cover;">
+                        <img src="img/DayBreak.png" alt="AI & Machine Learning" class="work-image-media" loading="lazy">
                     </div>
                     <div class="work-info">
                         <h3>AI & Machine Learning</h3>
@@ -260,12 +251,12 @@
             <p>
                 ITで笑顔を作るプロジェクト、一緒に始めませんか？
             </p>
-            <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap;">
+            <div class="contact-actions">
                 <a href="mailto:ryu727tmm19@gmail.com" class="btn-contact" data-hover><i class="far fa-envelope"></i> Email</a>
-                <a href="https://x.com/kyarameru_dev" target="_blank" rel="noopener noreferrer" class="btn-contact" style="background: #fff; color: #000;" data-hover><i class="fab fa-x-twitter"></i> X (Twitter)</a>
-                <a href="https://github.com/ryuki0616" target="_blank" rel="noopener noreferrer" class="btn-contact" style="background: #333; color: #fff;" data-hover><i class="fab fa-github"></i> GitHub</a>
+                <a href="https://x.com/kyarameru_dev" target="_blank" rel="noopener noreferrer" class="btn-contact btn-contact-light" data-hover><i class="fab fa-x-twitter"></i> X (Twitter)</a>
+                <a href="https://github.com/ryuki0616" target="_blank" rel="noopener noreferrer" class="btn-contact btn-contact-dark" data-hover><i class="fab fa-github"></i> GitHub</a>
             </div>
-            <p style="font-size: 0.9rem;">
+            <p class="contact-meta">
                 University: <a href="mailto:f23ba035@chuo.ac.jp" data-hover>f23ba035@chuo.ac.jp</a>
             </p>
         </section>
@@ -274,8 +265,8 @@
     <footer>
         <div class="container">
             <p>&copy; 2025 Ryuki Sato. Made with Smile <i class="fas fa-smile"></i></p>
-            <p style="margin-top: 0.5rem; font-size: 0.9rem;">
-                <a href="privacy.html" style="text-decoration: underline; opacity: 0.7;">プライバシーポリシー</a>
+            <p class="footer-meta">
+                <a href="privacy.html" class="footer-link">プライバシーポリシー</a>
             </p>
         </div>
     </footer>

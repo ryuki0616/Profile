@@ -10,4 +10,4 @@ Thumbs.db
 # Node (if applicable in future)
 node_modules/
 npm-debug.log
-
+dist/
