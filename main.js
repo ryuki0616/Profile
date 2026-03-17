@@ -29,6 +29,7 @@ const scrollElements = document.querySelectorAll('[data-scroll], .fade-in-up');
 
 // アニメーションを無効化する設定に対応
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let particleMaterial = null;
 
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -94,14 +95,14 @@ function initThreeJS() {
 
         geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
-        const material = new THREE.PointsMaterial({
+        particleMaterial = new THREE.PointsMaterial({
             size: 0.05,
             color: 0xffffff, // 白い点
             transparent: true,
             opacity: 0.8
         });
 
-        const particles = new THREE.Points(geometry, material);
+        const particles = new THREE.Points(geometry, particleMaterial);
         scene.add(particles);
 
         camera.position.z = 5;
@@ -139,6 +140,13 @@ function initThreeJS() {
     } catch (error) {
         console.error('Error initializing Three.js:', error);
     }
+}
+
+function syncParticleTheme() {
+    if (!particleMaterial) return;
+
+    const nextColor = document.body.classList.contains('light-theme') ? 0x111111 : 0xffffff;
+    particleMaterial.color.setHex(nextColor);
 }
 
 // DOMContentLoaded後にThree.jsの初期化を実行
@@ -234,6 +242,7 @@ const terminalOverlay = document.getElementById('terminal-overlay');
 const terminalInput = document.getElementById('terminal-input');
 const terminalOutput = document.getElementById('terminal-output');
 const terminalPromptText = document.getElementById('terminal-prompt-text');
+const terminalCloseButton = document.getElementById('terminal-close');
 
 // システム開始時間（Uptime計算用）
 const startTime = Date.now();
@@ -327,13 +336,18 @@ function toggleTerminal() {
         updatePrompt(); // 開いたときにも更新
     } else {
         // 閉じたときにクリアする（次回開いたときは初期状態）
-        // ただし、完全にリセットする場合はイントロを再表示する必要がある
-        terminalOutput.innerHTML = '';
+        while (terminalOutput.firstChild) {
+            terminalOutput.removeChild(terminalOutput.firstChild);
+        }
         const intro = document.querySelector('.terminal-intro');
         if (intro) {
             intro.style.display = 'block'; // イントロを再表示
         }
     }
+}
+
+if (terminalCloseButton) {
+    terminalCloseButton.addEventListener('click', toggleTerminal);
 }
 
 // コマンド履歴管理
@@ -857,11 +871,7 @@ function processCommand(rawCmd) {
             break;
         case 'theme':
             document.body.classList.toggle('light-theme');
-            if (document.body.classList.contains('light-theme')) {
-                material.color.setHex(0x111111); 
-            } else {
-                material.color.setHex(0xffffff); 
-            }
+            syncParticleTheme();
             addOutput("Theme toggled.");
             break;
         case '':
