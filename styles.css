@@ -244,8 +244,6 @@ section {
     .hero-desc { font-size: 1rem; padding: 0 1rem; }
     .about-content { grid-template-columns: 1fr; }
     section { padding: 4rem 0; }
-    .work-item, .work-item.reverse { grid-template-columns: 1fr; gap: 1.5rem; }
-    .work-item.reverse .work-image { order: 0; } /* モバイルでは画像が上 */
 }
 
 .about-text p {
@@ -332,6 +330,24 @@ section {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+@media (max-width: 768px) {
+    .work-item,
+    .work-item.reverse {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .work-image,
+    .work-item.reverse .work-image {
+        order: 0;
+    }
+
+    .work-info,
+    .work-item.reverse .work-info {
+        order: 1;
+    }
 }
 
 .work-info h3 {
