@@ -335,7 +335,8 @@ section {
 @media (max-width: 768px) {
     .work-item,
     .work-item.reverse {
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
         gap: 1.5rem;
     }
 
@@ -346,7 +347,7 @@ section {
 
     .work-info,
     .work-item.reverse .work-info {
-        order: 1;
+        order: 0;
     }
 }
 
