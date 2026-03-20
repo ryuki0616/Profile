@@ -333,20 +333,40 @@ section {
 }
 
 @media (max-width: 768px) {
+    .work-list {
+        gap: 3rem;
+    }
+
     .work-item,
     .work-item.reverse {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
     }
 
     .work-image,
     .work-item.reverse .work-image {
         order: 0;
+        aspect-ratio: auto;
+        background: transparent;
+        overflow: visible;
     }
 
     .work-info,
     .work-item.reverse .work-info {
-        order: 1;
+        order: 0;
+    }
+
+    .work-image-media {
+        display: block;
+        height: auto;
+        object-fit: contain;
+        border-radius: 16px;
+    }
+
+    .work-info h3 {
+        font-size: 1.5rem;
     }
 }
 
