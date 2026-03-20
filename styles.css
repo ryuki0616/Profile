@@ -333,21 +333,40 @@ section {
 }
 
 @media (max-width: 768px) {
+    .work-list {
+        gap: 3rem;
+    }
+
     .work-item,
     .work-item.reverse {
         display: flex;
         flex-direction: column;
-        gap: 1.5rem;
+        gap: 1rem;
+        align-items: stretch;
     }
 
     .work-image,
     .work-item.reverse .work-image {
         order: 0;
+        aspect-ratio: auto;
+        background: transparent;
+        overflow: visible;
     }
 
     .work-info,
     .work-item.reverse .work-info {
         order: 0;
+    }
+
+    .work-image-media {
+        display: block;
+        height: auto;
+        object-fit: contain;
+        border-radius: 16px;
+    }
+
+    .work-info h3 {
+        font-size: 1.5rem;
     }
 }
 
