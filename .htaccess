@@ -1,0 +1,31 @@
+# kyarameru.jp - Apache (AWS Lightsail) 用セキュリティ / パフォーマンス設定
+# 反映には Apache 本体で AllowOverride が有効、かつ mod_headers / mod_expires が必要。
+#   sudo a2enmod headers expires && sudo systemctl reload apache2
+# ※ ServerTokens / ServerSignature は .htaccess では設定できないため
+#   /etc/apache2/conf-available/security.conf 側で対応する（README 参照）。
+
+# --- セキュリティヘッダ ---
+<IfModule mod_headers.c>
+    # HTTPS を常時強制（1年）。サブドメイン運用が無いのを確認してから includeSubDomains/preload を検討
+    Header always set Strict-Transport-Security "max-age=31536000"
+    # クリックジャッキング対策（iframe 埋め込み禁止）
+    Header always set X-Frame-Options "DENY"
+    # MIME スニッフィング抑止
+    Header always set X-Content-Type-Options "nosniff"
+    # リファラの過剰送出を抑制
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    # 不要な強力機能を既定で無効化
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
+    # 使っていないヘッダの露出を除去
+    Header always unset X-Powered-By
+</IfModule>
+
+# --- 静的アセットのキャッシュ（表示速度向上 = SEO/離脱改善）---
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/png "access plus 30 days"
+    ExpiresByType image/svg+xml "access plus 30 days"
+    ExpiresByType text/css "access plus 7 days"
+    ExpiresByType application/javascript "access plus 7 days"
+    ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
