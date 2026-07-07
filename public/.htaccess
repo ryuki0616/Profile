@@ -4,6 +4,9 @@
 # ※ ServerTokens / ServerSignature は .htaccess では設定できないため
 #   /etc/apache2/conf-available/security.conf 側で対応する（README 参照）。
 
+# --- 旧URLからのリダイレクト（Next.js 化で /privacy.html -> /privacy/）---
+Redirect 301 /privacy.html /privacy/
+
 # --- セキュリティヘッダ ---
 <IfModule mod_headers.c>
     # HTTPS を常時強制（1年）。サブドメイン運用が無いのを確認してから includeSubDomains/preload を検討
@@ -16,6 +19,9 @@
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     # 不要な強力機能を既定で無効化
     Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
+    # CSP: Next.js 静的エクスポートはハイドレーション用インラインスクリプトを含むため
+    # script-src に 'unsafe-inline' が必要（旧 meta CSP からの既知のトレードオフ）
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
     # 使っていないヘッダの露出を除去
     Header always unset X-Powered-By
 </IfModule>
@@ -27,5 +33,6 @@
     ExpiresByType image/svg+xml "access plus 30 days"
     ExpiresByType text/css "access plus 7 days"
     ExpiresByType application/javascript "access plus 7 days"
+    ExpiresByType font/woff2 "access plus 30 days"
     ExpiresByType text/html "access plus 0 seconds"
 </IfModule>
