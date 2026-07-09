@@ -17,3 +17,6 @@ dist/
 out/
 next-env.d.ts
 *.tsbuildinfo
+
+# Local-only notes
+docs/passcodes.md
