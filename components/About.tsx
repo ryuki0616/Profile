@@ -41,7 +41,7 @@ export default function About() {
             {philosophies.map((p) => (
               <TiltCard key={p.title} className="philosophy-card">
                 <div className="philosophy-icon">
-                  <i className={p.icon}></i>
+                  <i className={p.icon} aria-hidden="true"></i>
                 </div>
                 <h3>{p.title}</h3>
                 <p>{p.text}</p>

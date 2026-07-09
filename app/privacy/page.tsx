@@ -43,7 +43,7 @@ export default function PrivacyPage() {
 
       <footer>
         <div className="container">
-          <p>&copy; 2025 Ryuki Sato. Made with Smile</p>
+          <p>&copy; {new Date().getFullYear()} Ryuki Sato. Made with Smile</p>
         </div>
       </footer>
     </>
