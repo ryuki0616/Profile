@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Keypad from "./Keypad";
+import Keypad from "../secret/Keypad";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);

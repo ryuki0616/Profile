@@ -1,15 +1,15 @@
-import Header from "@/components/Header";
-import Hero from "@/components/Hero";
-import About from "@/components/About";
-import Works from "@/components/Works";
-import Contact from "@/components/Contact";
-import Footer from "@/components/Footer";
-import CustomCursor from "@/components/CustomCursor";
-import CursorTrail from "@/components/CursorTrail";
-import ScrollReveal from "@/components/ScrollReveal";
-import Marquee from "@/components/Marquee";
-import Preloader from "@/components/Preloader";
-import SectionNav from "@/components/SectionNav";
+import Header from "@/components/sections/Header";
+import Hero from "@/components/sections/Hero";
+import About from "@/components/sections/About";
+import Works from "@/components/sections/Works";
+import Contact from "@/components/sections/Contact";
+import Footer from "@/components/sections/Footer";
+import CustomCursor from "@/components/fx/CustomCursor";
+import CursorTrail from "@/components/fx/CursorTrail";
+import ScrollReveal from "@/components/fx/ScrollReveal";
+import Marquee from "@/components/fx/Marquee";
+import Preloader from "@/components/fx/Preloader";
+import SectionNav from "@/components/fx/SectionNav";
 
 export default function Home() {
   return (
