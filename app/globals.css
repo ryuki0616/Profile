@@ -1271,17 +1271,6 @@ main {
     border: 1px solid var(--border-color);
 }
 
-.contact-meta {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-}
-
-.contact-meta a {
-    color: var(--text-main);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-}
-
 /* =============================================================
    Footer
    ============================================================= */

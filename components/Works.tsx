@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import useFocusTrap from "./useFocusTrap";
 
 const works = [
   {
@@ -42,6 +43,10 @@ const works = [
 export default function Works() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const active = activeIndex !== null ? works[activeIndex] : null;
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // モーダル内にフォーカスを閉じ込め、閉じたら開いた要素へ戻す
+  useFocusTrap(modalRef, active !== null);
 
   // モーダル表示中は ESC で閉じ、背面スクロールを止める
   useEffect(() => {
@@ -121,7 +126,12 @@ export default function Works() {
           aria-modal="true"
           aria-label={active.title}
         >
-          <div className="work-modal" onClick={(e) => e.stopPropagation()}>
+          <div
+            ref={modalRef}
+            tabIndex={-1}
+            className="work-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               type="button"
               className="work-modal-close"

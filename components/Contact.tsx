@@ -34,9 +34,6 @@ export default function Contact() {
           </a>
         </Magnetic>
       </div>
-      <p className="contact-meta">
-        University: <a href="mailto:f23ba035@chuo.ac.jp" data-hover>f23ba035@chuo.ac.jp</a>
-      </p>
     </section>
   );
 }
