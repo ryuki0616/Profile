@@ -10,6 +10,7 @@ import {
   INDEX_PATH,
   INDEX_FLAG,
 } from "./secret/notes";
+import useFocusTrap from "./useFocusTrap";
 
 // パスコード風キーパッド。入力したパスコードに対応するメモを解錠し、
 // そのページへ直行する（パスコードごとに見られるメモが異なる）。
@@ -89,7 +90,7 @@ export default function Keypad({ onClose }: { onClose: () => void }) {
     return () => window.clearTimeout(t);
   }, [status, router]);
 
-  // ESC で閉じ、数字キー入力にも対応、背面スクロールをロック、開いたらフォーカス
+  // ESC で閉じ、数字キー入力にも対応、背面スクロールをロック
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -102,12 +103,14 @@ export default function Keypad({ onClose }: { onClose: () => void }) {
     };
     document.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
-    panelRef.current?.focus();
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
     };
   }, [onClose, press, backspace]);
+
+  // パネル内にフォーカスを閉じ込め、閉じたら開いた要素へ戻す
+  useFocusTrap(panelRef, mounted);
 
   if (!mounted) return null;
 
