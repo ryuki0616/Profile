@@ -29,16 +29,17 @@ npm run build  # 静的エクスポート（out/ に生成）
 ## ディレクトリ構成
 
 ```
-app/                  # App Router のページ・レイアウト・メタデータ
-├── privacy/          # プライバシーポリシー
-└── secret/           # パスコード解錠で見る学習メモ（演出であり認証ではない）
-components/
-├── sections/         # ページを構成するセクション（Header〜Footer）
-├── fx/               # 演出・インタラクション（カーソル、ティルト、マーキー等）
-├── secret/           # secret 機能一式（Keypad、メモ本文、解錠フック）
-└── useFocusTrap.ts   # 共有フック（モーダルのフォーカストラップ）
-public/               # 静的ファイル（画像、.htaccess、旧URLリダイレクトスタブ）
-docs/                 # ローカル運用メモ（gitignore 対象を含む）
+src/
+├── app/                  # App Router のページ・レイアウト・メタデータ
+│   ├── privacy/          # プライバシーポリシー
+│   └── secret/           # パスコード解錠で見る学習メモ（演出であり認証ではない）
+└── components/
+    ├── sections/         # ページを構成するセクション（Header〜Footer）
+    ├── fx/               # 演出・インタラクション（カーソル、ティルト、マーキー等）
+    ├── secret/           # secret 機能一式（Keypad、メモ本文、解錠フック）
+    └── useFocusTrap.ts   # 共有フック（モーダルのフォーカストラップ）
+public/                   # 静的ファイル（画像、.htaccess、旧URLリダイレクトスタブ）
+docs/                     # ローカル運用メモ（gitignore 対象を含む）
 ```
 
 ## CI/CD
