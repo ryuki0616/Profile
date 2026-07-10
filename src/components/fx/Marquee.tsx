@@ -1,4 +1,4 @@
-const ITEMS = [
+const DEFAULT_ITEMS = [
   "IT for Smiles",
   "Universal UI",
   "NFC / RFID",
@@ -7,10 +7,10 @@ const ITEMS = [
   "Fun Experience",
 ];
 
-function Track() {
+function Track({ items }: { items: string[] }) {
   return (
     <div className="marquee-track">
-      {ITEMS.map((item, i) => (
+      {items.map((item, i) => (
         <span key={`${item}-${i}`} className="marquee-item">
           {item}
           <span className="marquee-star" aria-hidden="true">
@@ -23,11 +23,11 @@ function Track() {
 }
 
 // 横に流れる帯（装飾）。動きを出すためのマーキー。
-export default function Marquee() {
+export default function Marquee({ items = DEFAULT_ITEMS }: { items?: string[] }) {
   return (
     <div className="marquee" aria-hidden="true">
-      <Track />
-      <Track />
+      <Track items={items} />
+      <Track items={items} />
     </div>
   );
 }
