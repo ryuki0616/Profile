@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import Magnetic from "./Magnetic";
+import Magnetic from "../fx/Magnetic";
 
 export default function Hero() {
   const titleRef = useRef<HTMLHeadingElement>(null);

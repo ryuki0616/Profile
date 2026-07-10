@@ -1,4 +1,4 @@
-import TiltCard from "./TiltCard";
+import TiltCard from "../fx/TiltCard";
 
 const philosophies = [
   {

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import useFocusTrap from "./useFocusTrap";
+import useFocusTrap from "../useFocusTrap";
 
 const works = [
   {

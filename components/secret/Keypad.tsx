@@ -9,8 +9,8 @@ import {
   INDEX_PASSCODE,
   INDEX_PATH,
   INDEX_FLAG,
-} from "./secret/notes";
-import useFocusTrap from "./useFocusTrap";
+} from "./notes";
+import useFocusTrap from "../useFocusTrap";
 
 // パスコード風キーパッド。入力したパスコードに対応するメモを解錠し、
 // そのページへ直行する（パスコードごとに見られるメモが異なる）。

@@ -1,4 +1,4 @@
-import Magnetic from "./Magnetic";
+import Magnetic from "../fx/Magnetic";
 
 export default function Contact() {
   return (
