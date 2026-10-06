@@ -1362,6 +1362,127 @@ footer {
 }
 
 /* =============================================================
+   404 ページ（ぶらさがり看板）
+   ============================================================= */
+.not-found {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+}
+
+.nf-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding-top: 4rem;
+    padding-bottom: 2.5rem;
+}
+
+/* 看板ボタン（ボタンとしての見た目をリセット） */
+.nf-sign {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.nf-sign:focus-visible {
+    outline: 2px solid var(--text-main);
+    outline-offset: 8px;
+    border-radius: 14px;
+}
+
+/* 吊り下げ一式: 上端を支点にゆっくり揺れる */
+.nf-rig {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform-origin: top center;
+    animation: nf-sway 4.2s ease-in-out infinite;
+}
+
+.nf-ropes {
+    display: flex;
+    gap: clamp(70px, 12vw, 130px);
+}
+
+.nf-ropes span {
+    width: 2px;
+    height: clamp(38px, 6vw, 58px);
+    background: var(--border-color);
+}
+
+.nf-board {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    background: var(--bg-elev);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: clamp(1.1rem, 3.5vw, 1.9rem) clamp(2rem, 6vw, 3.6rem);
+    box-shadow: 0 22px 48px rgba(0, 0, 0, 0.55);
+}
+
+/* ヒーロータイトルと同じシマーグラデーション */
+.nf-404 {
+    font-size: clamp(4rem, 13vw, 7rem);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    background: linear-gradient(100deg, #ffffff 20%, #bcbcbc 50%, #ffffff 80%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shimmer 6s linear infinite;
+}
+
+.nf-board-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.nf-title {
+    font-size: clamp(1.4rem, 3.2vw, 1.9rem);
+    font-weight: 800;
+    margin-top: 2.2rem;
+}
+
+.nf-desc {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.9;
+    margin-top: 0.9rem;
+}
+
+.nf-cta {
+    display: flex;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+/* マーキーはページ下端に密着させる */
+.not-found .marquee {
+    margin: 0;
+    border-bottom: none;
+}
+
+@keyframes nf-sway {
+    0%, 100% { rotate: -2.5deg; }
+    50% { rotate: 2.5deg; }
+}
+
+/* =============================================================
    アクセシビリティ: モーション低減設定
    ============================================================= */
 @media (prefers-reduced-motion: reduce) {

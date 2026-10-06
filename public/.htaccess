@@ -7,6 +7,9 @@
 # --- 旧URLからのリダイレクト（Next.js 化で /privacy.html -> /privacy/）---
 Redirect 301 /privacy.html /privacy/
 
+# --- 404 ページ（Next.js の not-found が out/404.html を生成）---
+ErrorDocument 404 /404.html
+
 # --- セキュリティヘッダ ---
 <IfModule mod_headers.c>
     # HTTPS を常時強制（1年）。サブドメイン運用が無いのを確認してから includeSubDomains/preload を検討
